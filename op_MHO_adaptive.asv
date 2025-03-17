@@ -1,0 +1,207 @@
+clc;
+clear;
+close all;
+
+% Select Benchmark Function
+F = 'F1'; % Change this to any function ID from 'F1' to 'F23'
+
+% Load Benchmark Function
+[lb, ub, dim, fobj] = Functions(F);
+
+% Problem Definition
+problem.CostFunction = fobj;   % Cost Function
+problem.nVar = 2;            % Number of Variables
+problem.VarMin = lb;           % Lower Bound
+problem.VarMax = ub;           % Upper Bound
+
+% MHO Parameters
+params.MaxIt = 30;            % Maximum Iterations
+params.nPop = 50;              % Population Size
+params.Display = true;         % Display Iteration Info
+
+% Run MHO Algorithm
+[BestSol, BestCost, Convergence] = MHO_Adaptive(problem, params);
+
+% Display Results
+fprintf('\nBest Solution: %.4f\n', BestSol);
+fprintf('Best Cost: %.4e\n', BestCost);
+
+% Plot Convergence
+figure;
+semilogy(Convergence, 'LineWidth', 2);
+xlabel('Iteration');
+ylabel('Best Cost');
+title(['Convergence Curve for ', F]);
+grid on;
+
+
+
+function [BestSol, BestCost, Convergence] = MHO_Adaptive(problem, params)
+    % Extract Problem Information
+    CostFunction = problem.CostFunction;
+    nVar = problem.nVar;            % Number of Decision Variables
+    VarMin = problem.VarMin;        % Lower Bound of Variables
+    VarMax = problem.VarMax;        % Upper Bound of Variables
+    
+    % Algorithm Parameters
+    MaxIt = params.MaxIt;           % Maximum Number of Iterations
+    nPop = params.nPop;             % Population Size
+    refinement_factor = 0.1;        % Factor for refining best solutions
+    
+    % Initial Role Bounds
+    roaming_ratio = 0.25;           % Roaming: 0-25%
+    frontline_ratio = 0.25;         % Frontline: 25-50%
+    support_ratio = 0.25;           % Support: 50-75%
+    range_ratio = 0.25;             % Range: 75-100%
+    
+    total_range = VarMax - VarMin;
+    disp(total_range);
+    roaming_bounds = [VarMin, VarMin + roaming_ratio * total_range];
+    disp(roaming_bounds);
+    frontline_bounds = [VarMin + roaming_ratio * total_range, VarMin + 0.5 * total_range];
+    disp(frontline_bounds);
+    support_bounds = [VarMin + 0.5 * total_range, VarMin + 0.75 * total_range];
+    disp(support_bounds);
+    range_bounds = [VarMin + 0.75 * total_range, VarMax];
+    disp(range_bounds);
+    
+    % Initialize Population
+    empty_hunter.Position = [];
+    empty_hunter.Cost = [];
+    empty_hunter.bound = [];
+    pop = repmat(empty_hunter, nPop, 1);
+    
+    % Initialize Best Solution Ever Found
+    GlobalBest.Cost = inf;
+    for i = nPop
+        bestBound
+        total_range = VarMax - VarMin;
+        disp(total_range);
+        roaming_bounds = [VarMin, VarMin + roaming_ratio * total_range];
+        disp(roaming_bounds);
+        frontline_bounds = [VarMin + roaming_ratio * total_range, VarMin + 0.5 * total_range];
+        disp(frontline_bounds);
+        support_bounds = [VarMin + 0.5 * total_range, VarMin + 0.75 * total_range];
+        disp(support_bounds);
+        range_bounds = [VarMin + 0.75 * total_range, VarMax];
+        disp(range_bounds);
+        for j = 1:4
+            role = mod(j - 1, 4); % Assign roles: 0=Roaming, 1=Frontline, 2=Support, 3=Range
+            disp(role);
+            if role == 0
+                bounds = roaming_bounds;
+            elseif role == 1
+                bounds = frontline_bounds;
+            elseif role == 2
+                bounds = support_bounds;
+            else
+                bounds = range_bounds;
+            end
+            pop(j).bound = bounds;
+            pop(j).Position = bounds(1) + rand(1, nVar) .* (bounds(2) - bounds(1));
+            pop(j).Cost = CostFunction(pop(j).Position);
+        end
+        for k = 1:4
+            disp(pop(k));        
+        end
+        costs = [pop.Cost];  % Array of costs for each population member
+    
+        % Step 2: Find the index of the minimum cost
+        [~, bestIndex] = min(costs);
+            
+        bestBound = pop(bestIndex).bound;
+        disp(bestBound)
+    end
+    
+    % Initialize Population with Role-Based Ranges
+    for i = 1:nPop              
+        
+        % Generate Position Within Bounds
+        pop(i).Position = bounds(1) + rand(1, nVar) .* (bounds(2) - bounds(1));
+        disp(pop(i).Position)
+        % Clamp to Ensure Bounds
+        pop(i).Position = max(VarMin, min(VarMax, pop(i).Position));
+        
+        
+        % Evaluate
+        pop(i).Cost = CostFunction(pop(i).Position);
+        disp(pop(i).Cost)
+        
+        % Update Global Best
+        if pop(i).Cost < GlobalBest.Cost
+            GlobalBest = pop(i);
+        end
+    end
+    
+    % Array to Hold Best Cost Values
+    Convergence = zeros(MaxIt, 1);
+    
+    % Main Loop
+    for it = 1:MaxIt
+        % Find Best Solution in Each Role
+        best_in_role = repmat(empty_hunter, 4, 1);
+        for role = 0:3
+            role_indices = find(mod(0:nPop-1, 4) == role);
+            [~, best_idx] = min([pop(role_indices).Cost]);
+            best_in_role(role + 1) = pop(role_indices(best_idx));
+        end
+        
+        % Refine Best Solution in Each Role
+        for role = 0:3
+            best = best_in_role(role + 1);
+            bounds = [max(VarMin, best.Position - refinement_factor * total_range), ...
+                      min(VarMax, best.Position + refinement_factor * total_range)];
+            
+            % Refine Position Around Best Solution
+            refined_position = bounds(1) + rand(1, nVar) .* (bounds(2) - bounds(1));
+            refined_position = max(VarMin, min(VarMax, refined_position)); % Clamp
+            
+            refined_cost = CostFunction(refined_position);
+            if refined_cost < best.Cost
+                best.Position = refined_position;
+                best.Cost = refined_cost;
+                best_in_role(role + 1) = best;
+            end
+        end
+        
+        % Update Population
+        for i = 1:nPop
+            role = mod(i - 1, 4);
+            if rand < 0.5 % 50% chance to replace with refined best
+                pop(i) = best_in_role(role + 1);
+            else
+                if role == 0
+                    bounds = roaming_bounds;
+                elseif role == 1
+                    bounds = frontline_bounds;
+                elseif role == 2
+                    bounds = support_bounds;
+                else
+                    bounds = range_bounds;
+                end
+                
+                % Generate Position Within Bounds
+                pop(i).Position = bounds(1) + rand(1, nVar) .* (bounds(2) - bounds(1));
+                pop(i).Position = max(VarMin, min(VarMax, pop(i).Position)); % Clamp
+                pop(i).Cost = CostFunction(pop(i).Position);
+            end
+            
+            % Update Global Best
+            if pop(i).Cost < GlobalBest.Cost
+                GlobalBest = pop(i);
+            end
+        end
+        
+        % Store Best Cost
+        Convergence(it) = GlobalBest.Cost;
+        
+        % Display Iteration Information
+        if params.Display
+            fprintf('MHO Iteration %d: Best Cost = %.4e\n', it, GlobalBest.Cost);
+        end
+    end
+    
+    % Return Results
+    BestCost = GlobalBest.Cost;
+    BestSol = GlobalBest.Position;
+end
