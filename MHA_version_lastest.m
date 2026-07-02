@@ -34,93 +34,97 @@ params.MaxIt = 1000;            % Maximum Iterations
 params.nPop = 50;              % Population Size
 params.Display = true;         % Display Iteration Info
 
-% Run MHO Algorithm
-[BestSol, BestCost, Convergence] = MHO_Adaptive(problem, params);
+% Run CHEMICA Algorithm
+[BestSol, BestCost, Convergence, Log] = CHEMICA(problem, params);
 disp(BestSol)
+
+% Run MHO Algorithm
+% [BestSol, BestCost, Convergence] = MHO_Adaptive(problem, params);
+% disp(BestSol)
 
 % Display Results
 %% Run Algorithms
 % GA
-disp('Running GA...');
-[BestSol_GA, BestCost_GA, Conv_GA] = GA(problem, params);
-% Statistics for GA
-max_GA = max(Conv_GA);
-min_GA = min(Conv_GA);
-mean_GA = mean(Conv_GA);
-disp(BestSol_GA)
-
-
-% PSO
-disp('Running PSO...');
-[BestSol_PSO, BestCost_PSO, Conv_PSO] = PSO(problem, params);
-max_PSO = max(Conv_PSO);
-min_PSO = min(Conv_PSO);
-mean_PSO = mean(Conv_PSO);
-disp(BestSol_PSO)
-
-% GWO
-disp('Running GWO...');
-[BestSol_GWO, BestCost_GWO, Conv_GWO] = GWO(problem, params);
-max_GWO = max(Conv_GWO);
-min_GWO = min(Conv_GWO);
-mean_GWO = mean(Conv_GWO);
-disp(BestSol_GWO)
-
-
-
-% % ABC
-% disp('Running ABC...');s
-% [BestSol_ABC, BestCost_ABC, Conv_ABC] = ABC(problem, params);
-% max_ABC = max(Conv_ABC);
-% min_ABC = min(Conv_ABC);
-% mean_ABC = mean(Conv_ABC);
-% disp(BestSol_ABC)
-
-
-% SA
-disp('Running SA...');
-[BestSol_SA, BestCost_SA, Conv_SA] = SA(problem, params);
-max_SA = max(Conv_SA);
-min_SA = min(Conv_SA);
-mean_SA = mean(Conv_SA);
-disp(BestSol_SA)
-
-% WO
-disp('Running WO...');
-[Best_Score, Best_Pos, Convergence_curve_WO] = WO_NEW(problem, params);
-max_WO = max(Convergence_curve_WO);
-min_WO = min(Convergence_curve_WO);
-mean_WO = mean(Convergence_curve_WO);
-disp(Best_Pos)
-
-%Puma
-disp('Running Puma...');
-[Puma_X, Puma_C, Convergence_PUMA] = Puma_new(params, problem);
-max_PUMA = max(Convergence_PUMA);
-min_PUMA = min(Convergence_PUMA);
-mean_PUMA = mean(Convergence_PUMA);
-disp(Puma_X)
-
-disp('Running HBO...');
-[Leader_score, Leader_pos, Convergence_curve_HBO] = HBO(problem, params);
-max_HBO = max(Convergence_curve_HBO);
-min_HBO = min(Convergence_curve_HBO);
-mean_HBO = mean(Convergence_curve_HBO);
-disp(Leader_pos)
-
-disp('Running WOA...');
-[Leader_score_WOA, Leader_pos_WOA, Convergence_curve_WOA] = WOA(problem, params);
-max_WOA = max(Convergence_curve_WOA);
-min_WOA = min(Convergence_curve_WOA);
-mean_WOA = mean(Convergence_curve_WOA);
-disp(Leader_pos_WOA)
-
-disp('Running ACOR...');
-[BestCost_ACO, BestTour_ACO,Convergence_curve_ACOR] = ACOR(problem, params);
-max_ACO = max(Convergence_curve_ACOR);
-min_ACO = min(Convergence_curve_ACOR);
-mean_ACO = mean(Convergence_curve_ACOR);
-disp(BestTour_ACO)
+% disp('Running GA...');
+% [BestSol_GA, BestCost_GA, Conv_GA] = GA(problem, params);
+% % Statistics for GA
+% max_GA = max(Conv_GA);
+% min_GA = min(Conv_GA);
+% mean_GA = mean(Conv_GA);
+% disp(BestSol_GA)
+% 
+% 
+% % PSO
+% disp('Running PSO...');
+% [BestSol_PSO, BestCost_PSO, Conv_PSO] = PSO(problem, params);
+% max_PSO = max(Conv_PSO);
+% min_PSO = min(Conv_PSO);
+% mean_PSO = mean(Conv_PSO);
+% disp(BestSol_PSO)
+% 
+% % GWO
+% disp('Running GWO...');
+% [BestSol_GWO, BestCost_GWO, Conv_GWO] = GWO(problem, params);
+% max_GWO = max(Conv_GWO);
+% min_GWO = min(Conv_GWO);
+% mean_GWO = mean(Conv_GWO);
+% disp(BestSol_GWO)
+% 
+% 
+% 
+% % % ABC
+% % disp('Running ABC...');s
+% % [BestSol_ABC, BestCost_ABC, Conv_ABC] = ABC(problem, params);
+% % max_ABC = max(Conv_ABC);
+% % min_ABC = min(Conv_ABC);
+% % mean_ABC = mean(Conv_ABC);
+% % disp(BestSol_ABC)
+% 
+% 
+% % SA
+% disp('Running SA...');
+% [BestSol_SA, BestCost_SA, Conv_SA] = SA(problem, params);
+% max_SA = max(Conv_SA);
+% min_SA = min(Conv_SA);
+% mean_SA = mean(Conv_SA);
+% disp(BestSol_SA)
+% 
+% % WO
+% disp('Running WO...');
+% [Best_Score, Best_Pos, Convergence_curve_WO] = WO_NEW(problem, params);
+% max_WO = max(Convergence_curve_WO);
+% min_WO = min(Convergence_curve_WO);
+% mean_WO = mean(Convergence_curve_WO);
+% disp(Best_Pos)
+% 
+% %Puma
+% disp('Running Puma...');
+% [Puma_X, Puma_C, Convergence_PUMA] = Puma_new(params, problem);
+% max_PUMA = max(Convergence_PUMA);
+% min_PUMA = min(Convergence_PUMA);
+% mean_PUMA = mean(Convergence_PUMA);
+% disp(Puma_X)
+% 
+% disp('Running HBO...');
+% [Leader_score, Leader_pos, Convergence_curve_HBO] = HBO(problem, params);
+% max_HBO = max(Convergence_curve_HBO);
+% min_HBO = min(Convergence_curve_HBO);
+% mean_HBO = mean(Convergence_curve_HBO);
+% disp(Leader_pos)
+% 
+% disp('Running WOA...');
+% [Leader_score_WOA, Leader_pos_WOA, Convergence_curve_WOA] = WOA(problem, params);
+% max_WOA = max(Convergence_curve_WOA);
+% min_WOA = min(Convergence_curve_WOA);
+% mean_WOA = mean(Convergence_curve_WOA);
+% disp(Leader_pos_WOA)
+% 
+% disp('Running ACOR...');
+% [BestCost_ACO, BestTour_ACO,Convergence_curve_ACOR] = ACOR(problem, params);
+% max_ACO = max(Convergence_curve_ACOR);
+% min_ACO = min(Convergence_curve_ACOR);
+% mean_ACO = mean(Convergence_curve_ACOR);
+% disp(BestTour_ACO)
 
 
 
@@ -128,19 +132,19 @@ disp(BestTour_ACO)
 
 % Plot Results
 figure('Position',[100 100 800 600]);
-semilogy(Convergence,'-c','LineWidth',1.5, 'DisplayName','MHO');
+semilogy(Convergence,'-c','LineWidth',1.5, 'DisplayName','CHEMICA');
 
 hold on;
-semilogy(Conv_PSO,'-b','LineWidth',1.5, 'DisplayName','PSO');
-semilogy(Conv_GWO,'-g','LineWidth',1.5, 'DisplayName','GWO');
-% semilogy(Conv_ABC,'-k','LineWidth',1.5, 'DisplayName','ABC');
-semilogy(Conv_SA,'-m','LineWidth',1.5, 'DisplayName','SA');
-semilogy(Conv_GA,'-r','LineWidth',1.5, 'DisplayName','GA');
-semilogy(Convergence_curve_WO,'LineWidth',1.5, 'DisplayName','WO');
-semilogy(Convergence_PUMA,'LineWidth',1.5, 'DisplayName','PUMA');
-semilogy(Convergence_curve_HBO,'LineWidth',1.5, 'DisplayName','HBO');
-semilogy(Convergence_curve_WOA,'LineWidth',1.5, 'DisplayName','WOA');
-semilogy(Convergence_curve_ACOR,'LineWidth',1.5, 'DisplayName','ACOR');
+% semilogy(Conv_PSO,'-b','LineWidth',1.5, 'DisplayName','PSO');
+% semilogy(Conv_GWO,'-g','LineWidth',1.5, 'DisplayName','GWO');
+% % semilogy(Conv_ABC,'-k','LineWidth',1.5, 'DisplayName','ABC');
+% semilogy(Conv_SA,'-m','LineWidth',1.5, 'DisplayName','SA');
+% semilogy(Conv_GA,'-r','LineWidth',1.5, 'DisplayName','GA');
+% semilogy(Convergence_curve_WO,'LineWidth',1.5, 'DisplayName','WO');
+% semilogy(Convergence_PUMA,'LineWidth',1.5, 'DisplayName','PUMA');
+% semilogy(Convergence_curve_HBO,'LineWidth',1.5, 'DisplayName','HBO');
+% semilogy(Convergence_curve_WOA,'LineWidth',1.5, 'DisplayName','WOA');
+% semilogy(Convergence_curve_ACOR,'LineWidth',1.5, 'DisplayName','ACOR');
 
 xlabel('Iteration');
 ylabel('Best Cost (log)');
@@ -148,7 +152,290 @@ grid on;
 legend('show');
 title('Convergence Curves');
 
-%% MHO
+%% CHEMICA
+function [BestSol, BestCost, Convergence, Log] = CHEMICA(problem, params)
+    %% CHEMICA: Causal + Chemical-operator Metaheuristic    
+    %% ==== Extract Problem Information ====
+    CostFunction = problem.CostFunction;
+    nVar = problem.nVar;
+    
+    VarMin = problem.VarMin;
+    VarMax = problem.VarMax;
+    if isscalar(VarMin), VarMin = repmat(VarMin, 1, nVar); end
+    if isscalar(VarMax), VarMax = repmat(VarMax, 1, nVar); end
+    
+    hasConstraint = isfield(problem, 'ConstraintFunction') && ~isempty(problem.ConstraintFunction);
+    if hasConstraint
+        ConstraintFunction = problem.ConstraintFunction;  % returns viol or [viol, feasible]
+    else
+        ConstraintFunction = [];
+    end
+    
+    %% ==== Algorithm Parameters (with sensible defaults) ====
+    MaxIt  = params.MaxIt;
+    nPop   = params.nPop;
+    
+    % Causal/Operator policy
+    kappa_softmax = 3.0;   % policy sharpness
+    BetaUCB       = 1.5;   % exploration in UCB
+    deltaATEFrac  = 0.02;  % perturb % of range
+    
+    % Reactor schedule (Arrhenius-like)
+    T0      = 1.0;
+    AlphaT  = 1e-3;   % Tt = T0/(1+AlphaT*t)
+    EtaBase = 0.4;    % base step for Reactor
+    EaC     = 0.2;    % Ea ≈ EaC/|tau|; lower Ea -> larger step
+    
+    % Expander jump
+    rho_mu   = 0.0;  % lognormal mean
+    rho_sig  = 0.5;  % lognormal std
+   
+    % Penalty
+    lambda0  = 1.0;
+    lambdaUp = 1.05;  % increase if feasible rate low
+    feasThresh = 0.8;
+   
+    % Misc
+    rng('shuffle');             % seed
+    epsilon_small = 1e-12;
+    
+    %% ==== Initialization ====
+    % Population: uniform within [VarMin, VarMax]
+    positions = VarMin + rand(nPop, nVar) .* (VarMax - VarMin);
+    
+    % Evaluate with penalty
+    lambda = lambda0;
+    costs   = zeros(nPop,1);
+    violArr = zeros(nPop,1);
+    for k=1:nPop
+        [costs(k), violArr(k)] = penalized_cost(positions(k,:), CostFunction, ConstraintFunction, lambda);
+    end
+    
+    % Elite
+    [BestCost, bestIdx] = min(costs);
+    BestSol.Position = positions(bestIdx,:);
+    BestSol.Cost     = BestCost;
+    
+    % Diversity baseline (for HX weight ifต้องใช้)
+    Div0 = mean(vecnorm(positions - mean(positions,1), 2, 2));
+    if Div0<=0, Div0=1; end
+    
+    % Causal stats
+    tau_hat = zeros(1, nVar);      % running mean of ATE per dim
+    tau_n   = zeros(1, nVar);      % counts
+    
+    % Operator policy (credits)
+    ops    = {'Reactor','HX','Expander'};
+    nOps   = numel(ops);
+    theta  = zeros(1, nOps);       % operator credit
+    probs  = softmax(theta, kappa_softmax);
+    
+    % Traces
+    Convergence = zeros(MaxIt,1);
+    Log.tau_hat = zeros(MaxIt, nVar);
+    Log.op_prob = zeros(MaxIt, nOps);
+    Log.op_used = strings(MaxIt,1);
+    Log.feasible_rate = zeros(MaxIt,1);
+    
+    Tt = T0;
+    
+    %% ==== Main Loop ====
+    for it = 1:MaxIt
+    
+        % 1) Causal-UCB select target dimension
+        ucb = tau_hat + BetaUCB * sqrt( log(1+it) ./ (tau_n + 1) );
+        [~, i_star] = max(ucb);
+    
+        % 2) Sample operator from policy
+        op_idx = sample_from_probs(probs);
+        opName = ops{op_idx};
+    
+        new_positions = zeros(nPop, nVar);
+        new_costs     = zeros(nPop, 1);
+        new_viol      = zeros(nPop, 1);
+    
+        % For operator credit: track avg improvement
+        delta_f = zeros(nPop,1);
+    
+        % Precompute for HX (distances to elite)
+        elite = BestSol.Position;
+    
+        for k = 1:nPop
+            x = positions(k,:);
+            old_cost = costs(k);
+    
+            switch opName
+                case 'Reactor'
+                    % Arrhenius-like per-dimension speed
+                    k_arr = zeros(1,nVar);
+                    for j=1:nVar
+                        tau_abs = abs(tau_hat(j));
+                        Ea = EaC / max(tau_abs, epsilon_small);  % lower Ea if strong causal
+                        k_arr(j) = exp(-Ea / max(Tt, epsilon_small));
+                    end
+                    % emphasize causal target dimension
+                    mask = ones(1,nVar);
+                    mask(i_star) = 1.0;  % could boost this dim more ifต้องการ
+                    step = EtaBase * k_arr .* mask .* (elite - x);
+                    x_new = x + step;
+    
+                case 'HX' % Heat Exchanger (LMD-driven crossover)
+                    % pick mate
+                    j = randi(nPop);
+                    while j==k, j = randi(nPop); end
+                    xa = x;
+                    xb = positions(j,:);
+    
+                    % LMD weights vs elite
+                    d1 = abs(xa - elite);
+                    d2 = abs(xb - elite);
+    
+                    % avoid 0/0 and log(0)
+                    d1 = max(d1, epsilon_small);
+                    d2 = max(d2, epsilon_small);
+    
+                    LMD = (d1 - d2) ./ log(d1 ./ d2);
+                    LMD = arrayfun(@(z) (z), LMD); % identity; (already protected)
+                    LMDmean = mean(abs(LMD)) + epsilon_small;
+    
+                    w = 1./(1 + exp(-(LMD / LMDmean)));  % logistic
+                    x_new = xa + w .* (xb - xa);
+    
+                case 'Expander' % lognormal scale jump around elite
+                    rho = exp(rho_mu + rho_sig*randn);
+                    x_new = elite + rho*(x - elite);
+    
+                otherwise
+                    x_new = x; % fallback
+            end
+    
+            % Repair bounds (reflection)
+            x_new = bound_repair_reflect(x_new, VarMin, VarMax);
+            x_new
+            % Evaluate with penalty
+            [new_costs(k), new_viol(k)] = penalized_cost(x_new, CostFunction, ConstraintFunction, lambda);
+            new_positions(k,:) = x_new;
+    
+            delta_f(k) = new_costs(k) - old_cost;  % improvement negative
+        end
+    
+        % Select next population (elitist replacement)
+        % Keep best between old and new per index (can be changed to generational)
+        improvedMask = new_costs < costs;
+        positions(improvedMask,:) = new_positions(improvedMask,:);
+        costs(improvedMask)       = new_costs(improvedMask);
+        violArr(improvedMask)     = new_viol(improvedMask);
+    
+        % Update elite
+        [currBest, bidx] = min(costs);
+        if currBest < BestSol.Cost
+            BestSol.Cost = currBest;
+            BestSol.Position = positions(bidx,:);
+        end
+
+        % 3) Online ATE update around elite on dimension i_star
+        range_i = VarMax(i_star) - VarMin(i_star);
+        delta_i = max(deltaATEFrac*range_i, 1e-6);
+        xe = BestSol.Position;
+        xp = xe;
+        xp(i_star) = min(VarMax(i_star), xp(i_star)+delta_i);
+        xp = bound_repair_reflect(xp, VarMin, VarMax);
+    
+        f_base = CostFunction(xe);
+        f_plus = CostFunction(xp);
+        df = f_plus - f_base;
+    
+        tau_n(i_star) = tau_n(i_star) + 1;
+        tau_hat(i_star) = tau_hat(i_star) + (df - tau_hat(i_star))/tau_n(i_star);
+    
+        % 4) Operator credit update (EMA on improvement)
+        meanImprove = -mean(delta_f);  % improvement -> positive
+        lr = 0.3;
+        theta(op_idx) = theta(op_idx) + lr*(meanImprove - theta(op_idx));
+        probs = softmax(theta, kappa_softmax);
+    
+        % 5) Adaptive penalty via feasible rate
+        feas_rate = mean(new_viol <= 1e-12);
+        if feas_rate < feasThresh
+            lambda = lambda * lambdaUp;
+        end
+    
+        % 6) Temperature schedule
+        Tt = T0 / (1 + AlphaT*it);
+    
+        % Logging
+        Convergence(it) = BestSol.Cost;
+        Log.tau_hat(it,:) = tau_hat;
+        Log.op_prob(it,:) = probs;
+        Log.op_used(it)   = string(opName);
+        Log.feasible_rate(it) = feas_rate;
+    
+        % (optional) termination by stall could be added here
+    end
+    
+    BestCost = BestSol.Cost;
+
+end % ===== end of main function =====
+
+%% --------- Helper Functions ----------
+function val = getfield_or(S, name, default)
+    if isfield(S, name) && ~isempty(S.(name))
+        val = S.(name);
+    else
+        val = default;
+    end
+end
+
+function x = bound_repair_reflect(x, lb, ub)
+    % Reflect back into [lb, ub]
+    for i=1:numel(x)
+        if x(i) < lb(i)
+            d = lb(i) - x(i);
+            x(i) = lb(i) + d;
+        end
+        if x(i) > ub(i)
+            d = x(i) - ub(i);
+            x(i) = ub(i) - d;
+        end
+        % clamp if still off due to numeric
+        x(i) = min(max(x(i), lb(i)), ub(i));
+    end
+end
+
+function [pcost, viol] = penalized_cost(x, CostFunction, ConstraintFunction, lambda)
+    f = CostFunction(x);
+    if isempty(ConstraintFunction)
+        viol = 0;
+    else
+        out = ConstraintFunction(x);
+        if isscalar(out)
+            viol = max(0, out); % assume >=0 means violation magnitude
+        else
+            % [viol, feasible] format assumed
+            viol = out(1);
+        end
+    end
+    pcost = f + lambda*(viol.^2);
+end
+
+function p = softmax(theta, kappa)
+    z = kappa*theta;
+    z = z - max(z);
+    ez = exp(z);
+    p = ez / sum(ez);
+end
+
+function idx = sample_from_probs(p)
+    r = rand;
+    c = cumsum(p);
+    idx = find(r<=c,1,'first');
+    if isempty(idx), idx = numel(p); end
+end
+
+
+
+
+%% MHA
 function [BestSol, BestCost, Convergence] = MHO_Adaptive(problem, params)
     % Extract Problem Information
     CostFunction = problem.CostFunction;

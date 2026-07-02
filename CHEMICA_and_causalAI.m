@@ -1,146 +1,748 @@
+%% 
 clc;
 clear;
 close all;
 
 
+% Select Benchmark Function
+F = 'F1'; % Change this to any function ID from 'F1' to 'F23'
+% F = 'PressureVesselDesign';
+% 'PressureVesselDesign'
+%        
+% 'StringDesign'
+%        
+%  'ThreeBarTruss'
+%        
+% 'GearTrainDesign'
+%       
+% 'CantileverBeam'
+%         
+% 'WeldedBeam'
+      
 
 
-% Optimization Algorithms Comparison
-clear; clc; close all;
+[lb, ub, dim, fobj] = Functions(F);
+% [lb, ub, dim, fobj] = Func_eng(F);
 
-% Optimization Algorithms Comparison
+% Problem Definition
+problem.CostFunction = fobj;   % Cost Function
+problem.nVar = dim;            % Number of Variablesสยง
+problem.VarMin = lb;           % Lower Bound
+problem.VarMax = ub;           % Upper Bound
 
-Problems = arrayfun(@(x) ['F', num2str(x)], 1:23, 'UniformOutput', false);
-results = struct;  % Initialize the results structure
-run_no = 30;
-FunctionsToTest = { 
-    'Linearmodel',
-    'Lassomodel',
-    
-};
+% MHO Parameters
+params.MaxIt = 1000;            % Maximum Iterations
+params.nPop = 50;              % Population Size
+params.Display = true;         % Display Iteration Info
 
-for p = 1:numel(FunctionsToTest)
-    i = FunctionsToTest{p};  % Current problem identifier
-    fprintf('Running Optimization for Problem %s\n', i);  
-    % โหลดข้อมูล Boston Housing จาก UCI (ถ้าไม่มีไฟล์เก็บไว้)
-    if ~isfile('boston.csv')
-        url = 'https://raw.githubusercontent.com/selva86/datasets/master/BostonHousing.csv';
-        websave('boston.csv', url);
+% Run CHEMICA Algorithm
+[BestSol, BestCost, Convergence, Log] = CHEMICA(problem, params);
+disp(BestSol)
+disp(BestSol.Position)
+
+% Run MHA Algorithm
+% [BestSol, BestCost, Convergence] = MHO_Adaptive(problem, params);
+% disp(BestSol)
+
+% Display Results
+%% Run Algorithms
+% GA
+% disp('Running GA...');
+% [BestSol_GA, BestCost_GA, Conv_GA] = GA(problem, params);
+% % Statistics for GA
+% max_GA = max(Conv_GA);
+% min_GA = min(Conv_GA);
+% mean_GA = mean(Conv_GA);
+% disp(BestSol_GA)
+% 
+% 
+% % PSO
+% disp('Running PSO...');
+% [BestSol_PSO, BestCost_PSO, Conv_PSO] = PSO(problem, params);
+% max_PSO = max(Conv_PSO);
+% min_PSO = min(Conv_PSO);
+% mean_PSO = mean(Conv_PSO);
+% disp(BestSol_PSO)
+% 
+% % GWO
+% disp('Running GWO...');
+% [BestSol_GWO, BestCost_GWO, Conv_GWO] = GWO(problem, params);
+% max_GWO = max(Conv_GWO);
+% min_GWO = min(Conv_GWO);
+% mean_GWO = mean(Conv_GWO);
+% disp(BestSol_GWO)
+% 
+% 
+% 
+% % % ABC
+% % disp('Running ABC...');s
+% % [BestSol_ABC, BestCost_ABC, Conv_ABC] = ABC(problem, params);
+% % max_ABC = max(Conv_ABC);
+% % min_ABC = min(Conv_ABC);
+% % mean_ABC = mean(Conv_ABC);
+% % disp(BestSol_ABC)
+% 
+% 
+% % SA
+% disp('Running SA...');
+% [BestSol_SA, BestCost_SA, Conv_SA] = SA(problem, params);
+% max_SA = max(Conv_SA);
+% min_SA = min(Conv_SA);
+% mean_SA = mean(Conv_SA);
+% disp(BestSol_SA)
+% 
+% WO
+disp('Running WO...');
+[Best_Score, Best_Pos, Convergence_curve_WO] = WO_NEW(problem, params);
+max_WO = max(Convergence_curve_WO);
+min_WO = min(Convergence_curve_WO);
+mean_WO = mean(Convergence_curve_WO);
+% disp(Best_Pos)
+% 
+% %Puma
+% disp('Running Puma...');
+% [Puma_X, Puma_C, Convergence_PUMA] = Puma_new(params, problem);
+% max_PUMA = max(Convergence_PUMA);
+% min_PUMA = min(Convergence_PUMA);
+% mean_PUMA = mean(Convergence_PUMA);
+% disp(Puma_X)
+% 
+% disp('Running HBO...');
+% [Leader_score, Leader_pos, Convergence_curve_HBO] = HBO(problem, params);
+% max_HBO = max(Convergence_curve_HBO);
+% min_HBO = min(Convergence_curve_HBO);
+% mean_HBO = mean(Convergence_curve_HBO);
+% disp(Leader_pos)
+% 
+% disp('Running WOA...');
+% [Leader_score_WOA, Leader_pos_WOA, Convergence_curve_WOA] = WOA(problem, params);
+% max_WOA = max(Convergence_curve_WOA);
+% min_WOA = min(Convergence_curve_WOA);
+% mean_WOA = mean(Convergence_curve_WOA);
+% disp(Leader_pos_WOA)
+% 
+% disp('Running ACOR...');
+% [BestCost_ACO, BestTour_ACO,Convergence_curve_ACOR] = ACOR(problem, params);
+% max_ACO = max(Convergence_curve_ACOR);
+% min_ACO = min(Convergence_curve_ACOR);
+% mean_ACO = mean(Convergence_curve_ACOR);
+% disp(BestTour_ACO)
+
+
+
+%% Results
+
+% Plot Results
+figure('Position',[100 100 800 600]);
+semilogy(Convergence,'-c','LineWidth',1.5, 'DisplayName','CHEMICA');
+
+hold on;
+% semilogy(Conv_PSO,'-b','LineWidth',1.5, 'DisplayName','PSO');
+% semilogy(Conv_GWO,'-g','LineWidth',1.5, 'DisplayName','GWO');
+% % semilogy(Conv_ABC,'-k','LineWidth',1.5, 'DisplayName','ABC');
+% semilogy(Conv_SA,'-m','LineWidth',1.5, 'DisplayName','SA');
+% semilogy(Conv_GA,'-r','LineWidth',1.5, 'DisplayName','GA');
+semilogy(Convergence_curve_WO,'LineWidth',1.5, 'DisplayName','WO');
+% semilogy(Convergence_PUMA,'LineWidth',1.5, 'DisplayName','PUMA');
+% semilogy(Convergence_curve_HBO,'LineWidth',1.5, 'DisplayName','HBO');
+% semilogy(Convergence_curve_WOA,'LineWidth',1.5, 'DisplayName','WOA');
+% semilogy(Convergence_curve_ACOR,'LineWidth',1.5, 'DisplayName','ACOR');
+
+xlabel('Iteration');
+ylabel('Best Cost (log)');
+grid on;
+legend('show');
+title('Convergence Curves');
+
+%% CHEMICA
+function [BestSol, BestCost, Convergence, Log] = CHEMICA(problem, params)
+%% CHEMICA: Causal + Chemical-operator Metaheuristic (hierarchical phase→op)
+% ... (same header as yours) ...
+
+    %% ==== Extract Problem Information ====
+    CostFunction = problem.CostFunction;
+    nVar = problem.nVar;
+
+    VarMin = problem.VarMin;
+    VarMax = problem.VarMax;
+    if isscalar(VarMin), VarMin = repmat(VarMin, 1, nVar); end
+    if isscalar(VarMax), VarMax = repmat(VarMax, 1, nVar); end
+
+    hasConstraint = isfield(problem, 'ConstraintFunction') && ~isempty(problem.ConstraintFunction);
+    if hasConstraint
+        ConstraintFunction = problem.ConstraintFunction;
+    else
+        ConstraintFunction = [];
     end
-    
-    % อ่านข้อมูล
-    data = readtable('boston.csv');  
 
-    % แยก Features และ Target
-    X = table2array(data(:, 1:end-1));  % Features (ยกเว้นคอลัมน์สุดท้าย)
-    y = table2array(data(:, end));      % Target (ราคาบ้าน)
-    
-    % Define problem
-    [lb,ub,dim,fobj] = ML_model(i, X, y);
-    %% Problem Definition
-    problem.CostFunction = fobj;
-    problem.nVar = dim;    % Dimension
-    problem.VarMin = lb;   % Lower Bound
-    problem.VarMax = ub;   % Upper Bound
+    %% ==== Algorithm Parameters (with sensible defaults) ====
+    MaxIt  = params.MaxIt;
+    nPop   = params.nPop;
 
-    %% Optimization Parameters
-    params.MaxIt = 500;    % Max Iterations
-    params.nPop = 30;     % Population Size
-    params.Display = false; % Disable intermediate display for better performance
+    % Causal/Operator policy
+    kappa_softmax = 3.0;   % policy sharpness
+    BetaUCB       = 1.5;   % exploration in UCB
+    deltaATEFrac  = 0.02;  % perturb % of range
 
-    % Initialize structures to store multiple runs
-    all_results = struct('GA', [], 'PSO', [], 'GWO', [], 'ABC', [], 'SA', [], 'MHO', [], 'WO', [], 'Puma', [], 'HBO', [], 'WOA', []);
+    % Reactor schedule (Arrhenius-like)
+    T0      = 1.0;
+    AlphaT  = 1e-3;   % Tt = T0/(1+AlphaT*t)
+    EtaBase = 0.4;    % base step for Reactor
+    EaC     = 0.02;    % Ea ≈ EaC/|tau|; lower Ea -> larger step
 
-    % Run each algorithm for 'run_no' times
-    for run = 1:run_no
-        fprintf('Run %d/%d for Problem %s\n', run, run_no, i);
+    % Expander jump
+    rho_mu   = 0.0;  % lognormal mean
+    rho_sig  = 0.5;  % lognormal std
 
-        % Run MHO_Adaptive
-        startCPU = cputime;
-        [BestSol, BestCost, Convergence] = MHO_Adaptive(problem, params);
-        cpuTimeMHO = cputime - startCPU;
-        all_results.MHO = [all_results.MHO; struct('BestCost', BestCost, 'Convergence', Convergence ,'Cpu_times', cpuTimeMHO)];
+    % Penalty
+    lambda0  = 1.0;
+    lambdaUp = 1.05;  % increase if feasible rate low
+    feasThresh = 0.8;
+
+    % Hierarchical policy learning rates
+    eta_op = 0.08;
+    eta_phase = 0.02;
+    alpha_op_ewma = 0.08;
+    alpha_phase_ewma = 0.05;
+    eps_explore = 0.03;
+    ent_beta = 0.005;
+
+    % Misc
+    rng('shuffle');
+    epsilon_small = 1e-12;
+
+    %% ==== Initialization ====
+    positions = VarMin + rand(nPop, nVar) .* (VarMax - VarMin);
+
+    lambda = lambda0;
+    costs   = zeros(nPop,1);
+    violArr = zeros(nPop,1);
+    for k=1:nPop
+        [costs(k), violArr(k)] = penalized_cost(positions(k,:), CostFunction, ConstraintFunction, lambda);
+    end
+
+    [BestCost, bestIdx] = min(costs);
+    BestSol.Position = positions(bestIdx,:);
+    BestSol.Cost     = BestCost;
+
+    Div0 = mean(vecnorm(positions - mean(positions,1), 2, 2));
+    if Div0<=0, Div0=1; end
+
+    % Causal stats
+    tau_hat = zeros(1, nVar);
+    tau_n   = zeros(1, nVar);
+    % (optional) variance tracking could be added later
+
+    %% ==== Hierarchical policy setup ====
+    phases = {'Explore','Exploit','Refine'};
+    nPhase = numel(phases);
+    phase_theta = zeros(1,nPhase);              % logits for phases
+    phase_probs = softmax(phase_theta, kappa_softmax);
+    phase_ewma = zeros(1,nPhase);               % baseline per-phase
+
+    phase_ops = {
+       {'Expander','Separator','Splitter','Mixer'}, ...
+       {'Reactor','HX','Compressor','Stripper'}, ...
+       {'Distillation','Crystallizer','Recycle_Loop','Absorber','PID'}
+    };
+
+    % per-phase op logits / probs / ewma / counts
+    for p=1:nPhase
+        nOpInPhase(p) = numel(phase_ops{p});
+        theta{p} = zeros(1, nOpInPhase(p));
+        probs_op{p} = softmax(theta{p}, kappa_softmax);
+        op_ewma{p} = zeros(1, nOpInPhase(p));
+        op_count{p} = zeros(1, nOpInPhase(p));
+    end
+
+    % Traces (Log.op_prob use cell per iteration)
+    Convergence = zeros(MaxIt,1);
+    Log.tau_hat = zeros(MaxIt, nVar);
+    Log.phase_prob = zeros(MaxIt, nPhase);
+    Log.op_prob = cell(MaxIt,1);
+    Log.op_used = strings(MaxIt,1);
+    Log.feasible_rate = zeros(MaxIt,1);
+
+    Tt = T0;
+
+    %% ==== Main Loop ====
+    for it = 1:MaxIt
+        % 0) Online ATE update around elite on each dimension (one-sided)
+        % (You can replace with central diff or selective update to reduce cost)
+        for i_star = 1:nVar
+            range_i = VarMax(i_star) - VarMin(i_star);
+            delta_i = max(deltaATEFrac*range_i, 1e-6);
+            xe = BestSol.Position;
+            xp = xe;
+            xp(i_star) = min(VarMax(i_star), xp(i_star)+delta_i);
+            xp = bound_repair_reflect(xp, VarMin, VarMax);
+
+            f_base = CostFunction(xe);
+            f_plus = CostFunction(xp);
+            df = f_plus - f_base;
+
+            tau_n(i_star) = tau_n(i_star) + 1;
+            tau_hat(i_star) = tau_hat(i_star) + (df - tau_hat(i_star))/tau_n(i_star);
+        end
+
+        % 1) compute phase probs (shared for this iteration) and log
+        phase_probs = softmax(phase_theta, kappa_softmax);
+        phase_probs = (1-eps_explore)*phase_probs + eps_explore*(ones(1,nPhase)/nPhase);
+        Log.phase_prob(it,:) = phase_probs;
+
+        % Prepare new arrays
+        new_positions = zeros(nPop, nVar);
+        new_costs     = zeros(nPop, 1);
+        new_viol      = zeros(nPop, 1);
+        delta_f = zeros(nPop,1);
+
+        % trackers for which op used
+        used_phase = zeros(nPop,1);
+        used_opidx = zeros(nPop,1);
+
+        elite = BestSol.Position;
         
 
-        % Run GA
-        startCPU = cputime;
-        [BestSol_GA, BestCost_GA, Conv_GA] = GA(problem, params);
-        cpuTimeGA = cputime - startCPU;
-        all_results.GA = [all_results.GA; struct('BestCost', BestCost_GA, 'Convergence', Conv_GA,'Cpu_times', cpuTimeGA)];
+        % For each particle: sample phase then operator inside phase, apply op
+        for k = 1:nPop
+            x = positions(k,:);
+            old_cost = costs(k);
 
-        % Run PSO
-        startCPU = cputime;
-        [BestSol_PSO, BestCost_PSO, Conv_PSO] = PSO(problem, params);
-        cpuTimePSO = cputime - startCPU;
-        all_results.PSO = [all_results.PSO; struct('BestCost', BestCost_PSO, 'Convergence', Conv_PSO,'Cpu_times', cpuTimePSO)];
+            % sample phase (contextual features could be used here; keep simple)
+            p = sample_from_probs(phase_probs);
+            % sample operator within phase p
+            % ensure we have probs_op{p} up-to-date
+            probs_op{p} = softmax(theta{p}, kappa_softmax);
+            probs_op{p} = (1-eps_explore)*probs_op{p} + eps_explore*(ones(size(probs_op{p}))/numel(probs_op{p}));
+            op_idx_within = sample_from_probs(probs_op{p});
+            opName = phase_ops{p}{op_idx_within};
 
-        % Run GWO
-        startCPU = cputime;
-        [BestSol_GWO, BestCost_GWO, Conv_GWO] = GWO(problem, params);
-        cpuTimeGWO = cputime - startCPU;
-        all_results.GWO = [all_results.GWO; struct('BestCost', BestCost_GWO, 'Convergence', Conv_GWO,'Cpu_times', cpuTimeGWO)];
+            used_phase(k) = p;
+            used_opidx(k) = op_idx_within;
 
-        % Run SA
-        startCPU = cputime;
-        [BestSol_SA, BestCost_SA, Conv_SA] = SA(problem, params);
-        cpuTimeSA = cputime - startCPU;
-        all_results.SA = [all_results.SA; struct('BestCost', BestCost_SA, 'Convergence', Conv_SA,'Cpu_times', cpuTimeSA)];
+            
+            % apply operator (same switch as before)
+            switch opName
+                case 'Reactor'
+                    % Arrhenius-like per-dimension speed
+                    k_arr = zeros(1,nVar);
+                    for j=1:nVar
+                        tau_abs = abs(tau_hat(j));
+                        Ea = EaC / max(tau_abs, epsilon_small);
+                        k_arr(j) = exp(-Ea / max(Tt, epsilon_small));
+                    end
+                    mask = ones(1,nVar);
+                    % emphasize causal target dimension from UCB: compute i_star by UCB here
+                    ucb = tau_hat + BetaUCB * sqrt( log(1+it) ./ (tau_n + 1) );
+                    [~, i_star_ucb] = max(ucb);
+                    mask(i_star_ucb) = 1.0;
+                    step = EtaBase * k_arr .* mask .* (elite - x);
+                    x_new = x + step;
 
-        % Run WO
-        startCPU = cputime;
-        [Best_Score, Best_Pos, Convergence_curve_WO] = WO_NEW(problem, params);
-        cpuTimeWO = cputime - startCPU;
-        all_results.WO = [all_results.WO; struct('BestCost', Best_Score, 'Convergence', Convergence_curve_WO,'Cpu_times', cpuTimeWO)];
+                case 'HX'
+                    j = randi(nPop);
+                    while j==k, j = randi(nPop); end
+                    xa = x; xb = positions(j,:);
+                    d1 = abs(xa - elite); d2 = abs(xb - elite);
+                    d1 = max(d1, epsilon_small); d2 = max(d2, epsilon_small);
+                    LMD = (d1 - d2) ./ log(d1 ./ d2);
+                    LMDmean = mean(abs(LMD)) + epsilon_small;
+                    w = 1./(1 + exp(-(LMD / LMDmean)));
+                    x_new = xa + w .* (xb - xa);
 
-        % Run Puma
-        startCPU = cputime;
-        [Puma_X, Puma_C, Convergence_PUMA] = Puma_new(params, problem);
-        cpuTimePuma = cputime - startCPU;
-        all_results.Puma = [all_results.Puma; struct('BestCost', Puma_C, 'Convergence', Convergence_PUMA,'Cpu_times', cpuTimePuma)];
+                case 'Expander'
+                    rho = exp(rho_mu + rho_sig*randn);
+                    x_new = elite + rho*(x - elite);
 
-        % Run HBO
-        startCPU = cputime;
-        [Leader_score, Leader_pos, Convergence_curve_HBO] = HBO(problem, params);
-        cpuTimeHBO = cputime - startCPU;
-        all_results.HBO = [all_results.HBO; struct('BestCost', Leader_score, 'Convergence', Convergence_curve_HBO,'Cpu_times', cpuTimeHBO)];
+                case 'Distillation'
+                    rangeVar = (VarMax - VarMin);
+                    Rmin = getfield_or(params,'DistillRmin',0.1);
+                    Rmax = getfield_or(params,'DistillRmax',0.6);
+                    if exist('positions','var') && ~isempty(positions)
+                        Div = mean(vecnorm(positions - mean(positions,1),2,2));
+                        if ~exist('Div0','var') || Div0<=0, Div0 = max(Div,1); end
+                        R = Rmin + (Rmax-Rmin)*(1 - min(1, Div/Div0));
+                    else
+                        R = (Rmin+Rmax)/2;
+                    end
+                    Nstage = getfield_or(params,'DistillStages', 3);
+                    x_new = x;
+                    w = abs(tau_hat);
+                    if any(w), w = w / (sum(w)+eps); else, w = ones(1,nVar)/nVar; end
+                    for s = 1:Nstage
+                        lam = min(0.9, R*(0.5*w + 0.5/nVar));
+                        x_new = lam.*elite + (1-lam).*x_new;
+                        sigma = 0.002 * (Nstage-s+1);
+                        x_new = x_new + sigma.*rangeVar.*randn(1,nVar);
+                        x_new = bound_repair_reflect(x_new, VarMin, VarMax);
+                    end
 
-        % Run WOA
-        startCPU = cputime;
-        [Leader_score_WOA, Leader_pos_WOA, Convergence_curve_WOA] = WOA(problem, params);
-        cpuTimeWOA = cputime - startCPU;
-        all_results.WOA = [all_results.WOA; struct('BestCost', Leader_score_WOA, 'Convergence', Convergence_curve_WOA,'Cpu_times', cpuTimeWOA)];
+                case 'Mixer'
+                    rangeVar = (VarMax - VarMin);
+                    j = randi(nPop);
+                    while j==k, j = randi(nPop); end
+                    xa = x; xb = positions(j,:);
+                    da = norm(xa - elite); db = norm(xb - elite);
+                    if (da+db)==0, alpha = 0.5; else, alpha = db / (da + db); end
+                    alpha = max(0,min(1, alpha + 0.05*randn));
+                    x_new = alpha*xa + (1-alpha)*xb;
+                    x_new = x_new + 0.002*rangeVar.*randn(1,nVar);
+                    x_new = bound_repair_reflect(x_new, VarMin, VarMax);
+
+                case 'Absorber'
+                    if isempty(ConstraintFunction)
+                        x_new = bound_repair_reflect(x, VarMin, VarMax);
+                    else
+                        rangeVar = (VarMax - VarMin);
+                        step0 = 0.2;  shrink = 0.5;  maxTry = 5;
+                        [viol_x,~] = get_violation(x, ConstraintFunction);
+                        x_try = x + step0*(elite - x);
+                        x_try = bound_repair_reflect(x_try, VarMin, VarMax);
+                        [viol_try,~] = get_violation(x_try, ConstraintFunction);
+                        tcnt = 0;
+                        while (viol_try > viol_x) && (tcnt < maxTry)
+                            step0 = step0 * shrink;
+                            x_try = x + step0*(elite - x);
+                            x_try = bound_repair_reflect(x_try, VarMin, VarMax);
+                            [viol_try,~] = get_violation(x_try, ConstraintFunction);
+                            tcnt = tcnt + 1;
+                        end
+                        if viol_try >= viol_x
+                            h = 1e-3;
+                            g = approx_violation_grad(x, ConstraintFunction, h);
+                            if any(g)
+                                eta_fix = 0.2;
+                                x_try = x - eta_fix * g ./ (norm(g)+eps) .* mean(rangeVar);
+                                x_try = bound_repair_reflect(x_try, VarMin, VarMax);
+                            end
+                        end
+                        x_new = x_try;
+                    end
+
+                case 'Crystallizer'
+                    qfrac = getfield_or(params,'CrystalFrac',0.02);
+                    rangeVar = (VarMax - VarMin);
+                    Delta = max(qfrac*rangeVar, 1e-12);
+                    x_new = Delta .* round(x ./ Delta);
+                    x_new = Tt.*bound_repair_reflect(x_new, VarMin, VarMax);
+
+                case 'Recycle_Loop'
+                    rangeVar = (VarMax - VarMin);
+                    K = min(max(2, round(0.1*nVar)), nVar);
+                    [~, idx] = sort(abs(tau_hat), 'descend');
+                    S = idx(1:K);
+                    h0 = 0.02;
+                    maxIterLocal = 6;
+                    x_new = pattern_search_local(x, S, h0*rangeVar, CostFunction, VarMin, VarMax, maxIterLocal);
+
+                case 'Splitter'
+                    rangeVar = (VarMax - VarMin);
+                    frac = getfield_or(params,'SplitterFrac', 0.5);
+                    Ksp = getfield_or(params,'SplitterTopK', max(1, round(0.1*nVar)));
+                    [~, idxs] = sort(abs(tau_hat), 'descend');
+                    topK = idxs(1:Ksp);
+                    mask = zeros(1,nVar); mask(topK)=1;
+                    x_new = x;
+                    x_new(mask==1) = (1-frac)*x(mask==1) + frac*elite(mask==1);
+                    jitter_frac = getfield_or(params,'SplitterJitter', 0.01);
+                    x_new(mask==0) = x_new(mask==0) + jitter_frac.*rangeVar(mask==0).*randn(1,sum(mask==0));
+                    x_new = bound_repair_reflect(x_new, VarMin, VarMax);
+
+                case 'Stripper'
+                    rangeVar = (VarMax - VarMin);
+                    beta = getfield_or(params,'StripperBeta', 0.4);
+                    dir_est = tau_hat;
+                    sign_move = -sign(dir_est);
+                    mag = abs(dir_est);
+                    if all(mag==0), mag = ones(1,nVar); end
+                    mag = mag ./ (max(mag)+eps);
+                    raw_step = beta * (mag .* sign_move) .* rangeVar;
+                    thresh = getfield_or(params,'StripperThresh', 1e-3);
+                    applyMask = mag > thresh;
+                    if ~any(applyMask), applyMask = true(1,nVar); end
+                    x_new = x;
+                    x_new(applyMask) = x(applyMask) + raw_step(applyMask);
+                    x_new(~applyMask) = x_new(~applyMask) + 0.001*rangeVar(~applyMask).*randn(1,sum(~applyMask));
+                    x_new = bound_repair_reflect(x_new, VarMin, VarMax);
+
+                case 'Compressor'
+                    rangeVar = (VarMax - VarMin);
+                    mode = getfield_or(params,'CompressorMode','elite');
+                    gamma = getfield_or(params,'CompressorGamma', 0.6);
+                    if strcmpi(mode,'centroid')
+                        centroid = mean(positions,1);
+                        target = centroid;
+                    else
+                        target = elite;
+                    end
+                    x_new = target + gamma*(x - target);
+                    x_new = x_new + 0.002*rangeVar.*randn(1,nVar);
+                    x_new = bound_repair_reflect(x_new, VarMin, VarMax);
+
+                case 'Separator'
+                    rangeVar = (VarMax - VarMin);
+                    d_el = norm(x - elite);
+                    popmean = mean(positions,1);
+                    radiusFrac = getfield_or(params,'SeparatorRadiusFrac',0.05);
+                    radiusVec = radiusFrac * rangeVar;
+                    scaledPos = (positions - x) ./ max(rangeVar, eps);
+                    dists = sqrt(sum(scaledPos.^2,2));
+                    neighThresh = getfield_or(params,'SeparatorNeighborThresh', max(3, round(0.05*nPop)));
+                    nClose = sum(dists < 1);
+                    x_new = x;
+                    if nClose > neighThresh
+                        closeIdx = find(dists<1);
+                        centroidClose = mean(positions(closeIdx,:),1);
+                        push_dir = (x - centroidClose);
+                        if norm(push_dir)==0, push_dir = randn(1,nVar); end
+                        push_dir = push_dir ./ (norm(push_dir)+eps);
+                        push_mag = getfield_or(params,'SeparatorPush', 0.05);
+                        x_new = x + (push_mag .* rangeVar) .* push_dir;
+                    else
+                        refine = getfield_or(params,'SeparatorRefine', 0.02);
+                        x_new = x + refine .* (elite - x);
+                    end
+                    x_new = bound_repair_reflect(x_new, VarMin, VarMax);
+
+                case 'PID'
+                    rangeVar = (VarMax - VarMin);
+                    Kp = getfield_or(params,'PID_Kp', 0.6);
+                    Kd = getfield_or(params,'PID_Kd', 0.2);
+                    popmean = mean(positions,1);
+                    vel_approx = (x - popmean);
+                    prop = Kp .* (elite - x);
+                    deriv = -Kd .* vel_approx;
+                    raw_step = (prop + deriv);
+                    raw_step = raw_step .* (0.5 * rangeVar);
+                    raw_step = raw_step + 0.001 * rangeVar .* randn(1,nVar);
+                    x_new = bound_repair_reflect(x + raw_step, VarMin, VarMax);
+
+                otherwise
+                    x_new = x;
+            end % switch
+
+            % Evaluate and store
+            x_new = bound_repair_reflect(x_new, VarMin, VarMax);
+            [new_costs(k), new_viol(k)] = penalized_cost(x_new, CostFunction, ConstraintFunction, lambda);
+            new_positions(k,:) = x_new;
+            delta_f(k) = new_costs(k) - old_cost;  % improvement negative
+        end % for k
+
+        % Replacement (elitist)
+        improvedMask = new_costs < costs;
+        positions(improvedMask,:) = new_positions(improvedMask,:);
+        costs(improvedMask)       = new_costs(improvedMask);
+        violArr(improvedMask)     = new_viol(improvedMask);
+
+        [currBest, bidx] = min(costs);
+        if currBest < BestSol.Cost
+            BestSol.Cost = currBest;
+            BestSol.Position = positions(bidx,:);
+        end
+
+        % ==== Hierarchical credit updates ====
+        % aggregated rewards per (phase,op)
+        rewards = -delta_f; % positive = improvement
+        % update per-op stats and perform policy-gradient-like update
+        for p = 1:nPhase
+            for o = 1:nOpInPhase(p)
+                idx = find((used_phase==p) & (used_opidx==o));
+                if isempty(idx)
+                    meanR = 0;
+                else
+                    meanR = mean(rewards(idx));
+                end
+                % previous baseline
+                prev_baseline = op_ewma{p}(o);
+                % update EWMA baseline
+                op_ewma{p}(o) = (1 - alpha_op_ewma)*op_ewma{p}(o) + alpha_op_ewma * meanR;
+                % advantage (use prev baseline to avoid zero adv)
+                adv = meanR - prev_baseline;
+                % PG-like update on logits theta{p}
+                rho = softmax(theta{p}, kappa_softmax);
+                if adv ~= 0
+                    for j = 1:nOpInPhase(p)
+                        if j == o
+                            theta{p}(j) = theta{p}(j) + eta_op * adv * (1 - rho(j));
+                        else
+                            theta{p}(j) = theta{p}(j) - eta_op * adv * rho(j);
+                        end
+                    end
+                end
+                % increment op_count
+                op_count{p}(o) = op_count{p}(o) + numel(idx);
+            end
+            % entropy bonus & renormalize
+            p_prev = softmax(theta{p}, kappa_softmax);
+            theta{p} = theta{p} + ent_beta * ( - (log(p_prev + eps) + 1) );
+            probs_op{p} = softmax(theta{p}, kappa_softmax);
+            % apply small exploration mixing
+            probs_op{p} = (1-eps_explore)*probs_op{p} + eps_explore*(ones(size(probs_op{p}))/numel(probs_op{p}));
+        end
+
+        % update phase-level baselines & logits
+        for p = 1:nPhase
+            idxp = find(used_phase==p);
+            if isempty(idxp)
+                meanRp = 0;
+            else
+                meanRp = mean(rewards(idxp));
+            end
+            prev_ph_baseline = phase_ewma(p);
+            phase_ewma(p) = (1-alpha_phase_ewma)*phase_ewma(p) + alpha_phase_ewma * meanRp;
+            adv_p = meanRp - prev_ph_baseline;
+            pi = softmax(phase_theta, kappa_softmax);
+            for j = 1:nPhase
+                if j == p
+                    phase_theta(j) = phase_theta(j) + eta_phase * adv_p * (1 - pi(j));
+                else
+                    phase_theta(j) = phase_theta(j) - eta_phase * adv_p * pi(j);
+                end
+            end
+        end
+        % entropy + exploration mixing for phase probs
+        p_prev = softmax(phase_theta, kappa_softmax);
+        phase_theta = phase_theta + ent_beta * ( - (log(p_prev + eps) + 1) );
+        phase_probs = softmax(phase_theta, kappa_softmax);
+        phase_probs = (1-eps_explore)*phase_probs + eps_explore*(ones(1,nPhase)/nPhase);
+
+        % 4) Adaptive penalty via feasible rate
+        feas_rate = mean(new_viol <= 1e-12);
+        if feas_rate < feasThresh
+            lambda = lambda * lambdaUp;
+        end
+
+        % 5) Temperature schedule
+        Tt = T0 / (1 + AlphaT*it);
+
+        % Logging
+        Convergence(it) = BestSol.Cost;
+        Log.tau_hat(it,:) = tau_hat;
+        Log.op_prob{it} = probs_op;    % cell: per-iteration per-phase op probs
+        Log.op_used(it)   = string(join([phases(used_phase(1)), strings(1,1)])); % rough indicator (first used)
+        Log.feasible_rate(it) = feas_rate;
+
+    end % main loop
+
+    BestCost = BestSol.Cost;
+end
+
+%% --------- Helper Functions ----------
+function val = getfield_or(S, name, default)
+    if isfield(S, name) && ~isempty(S.(name))
+        val = S.(name);
+    else
+        val = default;
     end
-
-    % Aggregate results for the current problem
-    results(p).Problem = i;  % Save problem identifier
-    results(p).GA = aggregate_results(all_results.GA);
-    results(p).PSO = aggregate_results(all_results.PSO);
-    results(p).GWO = aggregate_results(all_results.GWO);
-    results(p).SA = aggregate_results(all_results.SA);
-    results(p).MHO = aggregate_results(all_results.MHO);
-    results(p).WO = aggregate_results(all_results.WO);
-    results(p).Puma = aggregate_results(all_results.Puma);
-    results(p).HBO = aggregate_results(all_results.HBO);
-    results(p).WOA = aggregate_results(all_results.WOA);
 end
 
-% Save all results
-save('optimization_results_realworld_tunningML_poblem_30runs.mat', 'results');
-
-%% Helper function to aggregate results
-function aggregated = aggregate_results(runs)
-    costs = arrayfun(@(x) x.BestCost, runs);
-    cpu_times = arrayfun(@(x) x.Cpu_times, runs);
-%     convergences = vertcat(runs.Convergence);
-    aggregated.BestCost = min(costs);
-    aggregated.MeanCost = mean(costs);
-    aggregated.StdCost = std(costs);
-    aggregated.MeanCpuTime = mean(cpu_times);
-    aggregated.Convergence = costs; % Average convergence curve
+function x = bound_repair_reflect(x, lb, ub)
+    % Reflect back into [lb, ub]
+    for i=1:numel(x)
+        if x(i) < lb(i)
+            d = lb(i) - x(i);
+            x(i) = lb(i) + d;
+        end
+        if x(i) > ub(i)
+            d = x(i) - ub(i);
+            x(i) = ub(i) - d;
+        end
+        % clamp if still off due to numeric
+        x(i) = min(max(x(i), lb(i)), ub(i));
+    end
 end
 
+function [pcost, viol] = penalized_cost(x, CostFunction, ConstraintFunction, lambda)
+    f = CostFunction(x);
+    if isempty(ConstraintFunction)
+        viol = 0;
+    else
+        out = ConstraintFunction(x);
+        if isscalar(out)
+            viol = max(0, out); % assume >=0 means violation magnitude
+        else
+            % [viol, feasible] format assumed
+            viol = out(1);
+        end
+    end
+    pcost = f + lambda*(viol.^2);
+end
 
-%% MHO
+function p = softmax(theta, kappa)
+    z = kappa*theta;
+    z = z - max(z);
+    ez = exp(z);
+    p = ez / sum(ez);
+end
+
+function idx = sample_from_probs(p)
+    r = rand;
+    c = cumsum(p);
+    idx = find(r<=c,1,'first');
+    if isempty(idx), idx = numel(p); end
+end
+
+function [viol, feasible] = get_violation(x, ConstraintFunction)
+    out = ConstraintFunction(x);
+    if isscalar(out)
+        viol = max(0, out);
+        feasible = (viol <= 1e-12);
+    else
+        viol = out(1);
+        feasible = numel(out)>1 && logical(out(2));
+    end
+end
+
+function g = approx_violation_grad(x, ConstraintFunction, h)
+    % finite-difference gradient ของ violation รวม
+    n = numel(x);
+    g = zeros(1,n);
+    [f0,~] = get_violation(x, ConstraintFunction);
+    for i=1:n
+        xp = x; xm = x;
+        xp(i) = xp(i) + h;
+        xm(i) = xm(i) - h;
+        [fp,~] = get_violation(xp, ConstraintFunction);
+        [fm,~] = get_violation(xm, ConstraintFunction);
+        g(i) = (fp - fm) / (2*h);
+    end
+end
+
+function x_out = pattern_search_local(x0, idxSet, hVec, CostFunction, VarMin, VarMax, maxIter)
+    x = x0;
+    f = CostFunction(x);
+    for itL = 1:maxIter
+        improved = false;
+        for i = idxSet(:).'
+            % ลอง +h และ -h
+            for sgn = [+1, -1]
+                x_try = x;
+                x_try(i) = x_try(i) + sgn * hVec(i);
+                x_try = bound_repair_reflect(x_try, VarMin, VarMax);
+                f_try = CostFunction(x_try);
+                if f_try < f
+                    x = x_try; f = f_try;
+                    improved = true;
+                    break;  % ออกจากสัญลักษณ์ sgn loop
+                end
+            end
+            if improved, break; end
+        end
+        % ถ้าไม่ดีขึ้นเลย ให้หดก้าว
+        if ~improved
+            hVec(idxSet) = 0.5 * hVec(idxSet);
+            if max(hVec(idxSet)) < 1e-9
+                break;  % เล็กเกินค่านิยม
+            end
+        end
+    end
+    x_out = x;
+end
+
+%% --------- END Helper Functions ----------
+
+
+%% MHA
 function [BestSol, BestCost, Convergence] = MHO_Adaptive(problem, params)
     % Extract Problem Information
     CostFunction = problem.CostFunction;
@@ -175,14 +777,10 @@ function [BestSol, BestCost, Convergence] = MHO_Adaptive(problem, params)
 
     Hunter = struct('role', [], 'Best_Position', [], 'Best_DMG', [], 'Try_move',[],'DMG',[]);
     
-    role = {'BladeMaster' , 'frontline'  , 'Ranger' , 'Supporter'};
+    role = {'BladeMaster' , 'frontline' , 'Supporter' , 'Ranger'};
 
     N = round(nPop/4);  
-%     cost = [];
-%     for k = 1:nPop
-%         cost(k) = CostFunction(positions(k,:));
-%     end
-%     [sortcost,index] = sort(cost,"ascend");   
+       
     for i = 1:nPop        
         Hunter(i).Try_move = positions(i, :);  % นำตำแหน่งที่เรียงแล้วใส่ใน Hunter
         Hunter(i).DMG = CostFunction(Hunter(i).Try_move);  % เก็บค่า cost ที่เรียงแล้ว  
@@ -193,30 +791,14 @@ function [BestSol, BestCost, Convergence] = MHO_Adaptive(problem, params)
             Hunter1st_rank = Hunter(i);
         end
 
-    end   
+    end
+   
     
     matches_BladeMaster = find(cellfun(@(b) isequal(b, 'BladeMaster'), {Hunter.role}));          
     matches_frontline = find(cellfun(@(b) isequal(b, 'frontline'), {Hunter.role}));          
     matches_Ranger = find(cellfun(@(b) isequal(b, 'Ranger'), {Hunter.role}));          
     matches_Supporter = find(cellfun(@(b) isequal(b, 'Supporter'), {Hunter.role}));
-%     role_arr = {matches_Ranger,matches_BladeMaster,matches_frontline,matches_Supporter};
-%     CC = 1;
-%     for i = 1:length(role_arr)
-%         role_group = role_arr{i};  % ดึงค่าของบทบาทที่กำลังวนลูปอยู่
-%         for j = role_group  % วนผ่าน index ของแต่ละ role
-%             % โค้ดที่ต้องการทำงานกับ Hunter(j)
-%             Hunter(j).Try_move = positions(index(CC), :);  % นำตำแหน่งที่เรียงแล้วใส่ใน Hunter
-%             Hunter(j).DMG = CostFunction(Hunter(j).Try_move);  % เก็บค่า cost ที่เรียงแล้ว  
-%             Hunter(j).Best_Position = Hunter(j).Try_move;
-%             Hunter(j).Best_DMG = Hunter(j).DMG;
-%             if Hunter(j).Best_DMG < Hunter1st_rank.Best_DMG
-%                 Hunter1st_rank = Hunter(j);
-%             end
-%          
-%             CC = CC + 1 ;
-%         end
-%     end
-  
+
     
     %ค้นหา และ ตีจุดอ่อน
     for u = 1:MaxIt
@@ -363,61 +945,61 @@ function [BestSol, BestCost, Convergence] = MHO_Adaptive(problem, params)
     
              
            %เคลื่อนที่ด้วย Supporter      
-           if i <= length(matches_Supporter)
-               V = exp(1- 10*(u/MaxIt)*rand()); 
-               
-               
-               dim_choose = randi(nVar);
-               dim_gbest =  Hunter1st_rank.Best_Position(dim_choose);
-               
-               
-               Try_move = Hunter(matches_Supporter(i)).Try_move;            
+           
+           V = exp(1- 10*(u/MaxIt)*rand()); 
            
            
-               if rand()<0.5                   
-                   new_pos = Hunter(matches_Supporter(i)).Try_move;
-    
-                   for j = 1:nVar              
-                       
-                           dim = Hunter1st_rank.Best_Position(j)*V;
-                           new_pos(j) = Try_move(j) + rand() * (dim - Try_move(j));
-                                      
-                   end
-            
+           dim_choose = randi(nVar);
+           dim_gbest =  Hunter1st_rank.Best_Position(dim_choose);
+           
+           
+           Try_move = Hunter(matches_Supporter(i)).Try_move;            
+           
+           
+           if rand()<0.5                   
+               new_pos = Hunter(matches_Supporter(i)).Try_move;
+
+               for j = 1:nVar              
                    
-                   new_pos = max(VarMin, min(VarMax, new_pos));
-                   if CostFunction(new_pos) < Hunter(matches_Supporter(i)).Best_DMG
-                       Hunter(matches_Supporter(i)).Best_Position = new_pos;
-                       Hunter(matches_Supporter(i)).Best_DMG = CostFunction(new_pos);
-                   end
-                   use_pos = Try_move + rand()*(new_pos-Try_move);
-                   Hunter(matches_Supporter(i)).Try_move = use_pos;
-                   Hunter(matches_Supporter(i)).DMG = CostFunction(use_pos);
-                   if Hunter(matches_Supporter(i)).DMG<Hunter(matches_Supporter(i)).Best_DMG
-                       Hunter(matches_Supporter(i)).Best_Position = Hunter(matches_Supporter(i)).Try_move;
-                       Hunter(matches_Supporter(i)).Best_DMG =  Hunter(matches_Supporter(i)).DMG ;
-                   end               
-               else
-                   new_pos = dim_gbest.*ones(1,nVar);
-                   new_pos = max(VarMin, min(VarMax, new_pos));
-                   if CostFunction(new_pos) < Hunter(matches_Supporter(i)).Best_DMG
-                       Hunter(matches_Supporter(i)).Best_Position = new_pos;
-                       Hunter(matches_Supporter(i)).Best_DMG = CostFunction(new_pos);
-                   end
-                   use_pos = Try_move + rand()*(new_pos-Try_move);
-                   Hunter(matches_Supporter(i)).Try_move = use_pos;
-                   Hunter(matches_Supporter(i)).DMG = CostFunction(use_pos);
-                   if Hunter(matches_Supporter(i)).DMG<Hunter(matches_Supporter(i)).Best_DMG 
-                        Hunter(matches_Supporter(i)).Best_Position = Hunter(matches_Supporter(i)).Try_move;
-                        Hunter(matches_Supporter(i)).Best_DMG =  Hunter(matches_Supporter(i)).DMG ;
-                   end            
-               end          
+                       dim = Hunter1st_rank.Best_Position(j)*V;
+                       new_pos(j) = Try_move(j) + rand() * (dim - Try_move(j));
+                                  
+               end
+        
                
-               
-               if Hunter(matches_Supporter(i)).Best_DMG < Hunter1st_rank.Best_DMG
-                    Hunter1st_rank = Hunter(matches_Supporter(i));                
-               end             
-           end
+               new_pos = max(VarMin, min(VarMax, new_pos));
+               if CostFunction(new_pos) < Hunter(matches_Supporter(i)).Best_DMG
+                   Hunter(matches_Supporter(i)).Best_Position = new_pos;
+                   Hunter(matches_Supporter(i)).Best_DMG = CostFunction(new_pos);
+               end
+               use_pos = Try_move + rand()*(new_pos-Try_move);
+               Hunter(matches_Supporter(i)).Try_move = use_pos;
+               Hunter(matches_Supporter(i)).DMG = CostFunction(use_pos);
+               if Hunter(matches_Supporter(i)).DMG<Hunter(matches_Supporter(i)).Best_DMG
+                   Hunter(matches_Supporter(i)).Best_Position = Hunter(matches_Supporter(i)).Try_move;
+                   Hunter(matches_Supporter(i)).Best_DMG =  Hunter(matches_Supporter(i)).DMG ;
+               end               
+           else
+               new_pos = dim_gbest.*ones(1,nVar);
+               new_pos = max(VarMin, min(VarMax, new_pos));
+               if CostFunction(new_pos) < Hunter(matches_Supporter(i)).Best_DMG
+                   Hunter(matches_Supporter(i)).Best_Position = new_pos;
+                   Hunter(matches_Supporter(i)).Best_DMG = CostFunction(new_pos);
+               end
+               use_pos = Try_move + rand()*(new_pos-Try_move);
+               Hunter(matches_Supporter(i)).Try_move = use_pos;
+               Hunter(matches_Supporter(i)).DMG = CostFunction(use_pos);
+               if Hunter(matches_Supporter(i)).DMG<Hunter(matches_Supporter(i)).Best_DMG 
+                    Hunter(matches_Supporter(i)).Best_Position = Hunter(matches_Supporter(i)).Try_move;
+                    Hunter(matches_Supporter(i)).Best_DMG =  Hunter(matches_Supporter(i)).DMG ;
+               end            
+           end          
+           
+           
+           if Hunter(matches_Supporter(i)).Best_DMG < Hunter1st_rank.Best_DMG
+                Hunter1st_rank = Hunter(matches_Supporter(i));                
+           end             
+           
          
 
         end
@@ -436,7 +1018,7 @@ function [BestSol, BestCost, Convergence] = MHO_Adaptive(problem, params)
             );
             itd = 0;
             
-            for k = 1:floor(N*0.5)
+            for k = 1:round(N*0.5)
                 if rand()<0.5             
                     for i =1:nVar
                         Hunter(matches_BladeMaster(indexcost_blade(end-(k-1)))).Try_move(i) = VarMin(i)+rand()*(VarMax(i)-VarMin(i));  
@@ -1932,3 +2514,4 @@ function [Leader_score_FFO, Leader_pos_FFO, Convergence_curve_FFO] = FFO(problem
     end
 end
 
+         
